@@ -2,7 +2,7 @@
 
 -- Создание таблицы users
 CREATE TABLE users (
-    user_id INT PRIMARY KEY, -- Тип INT, был выбор с SERIAL, но подумал для рандомной генерации его будет не очень удобно использовать
+    user_id SERIAL PRIMARY KEY, -- Тип SERIAL, подумал для рандомной генерации его будет очень удобно использовать
     birth_date DATE, -- Дата без времени
     sex VARCHAR(10), -- Male | Female
     age INT -- Возраст взял интовым значением
@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 -- Создание таблицы items
 CREATE TABLE items (
-    item_id INT PRIMARY KEY, -- INT тип у ключа, по аналогии с users думал про SERIAL
+    item_id SERIAL PRIMARY KEY, -- Тип SERIAL, подумал для рандомной генерации его будет очень удобно использовать
     description VARCHAR(255), -- описание товара, тип varchar
     price NUMERIC(10, 2), -- цена товара до копеек, хотя в БД принято хранить целое значение цены и при выборке делить на 100
     category VARCHAR(50) -- наименование категории товара
@@ -18,41 +18,38 @@ CREATE TABLE items (
 
 -- Создание таблицы ratings
 CREATE TABLE ratings (
-    rating_id INT PRIMARY KEY, -- INT ключ
-    item_id INT REFERENCES items(item_id), -- Внешний ключ, тип INT
-    user_id INT REFERENCES users(user_id), -- Внешний ключ, тип INT
+    rating_id SERIAL PRIMARY KEY, -- Тип SERIAL, подумал для рандомной генерации его будет очень удобно использовать
+    item_id SERIAL REFERENCES items(item_id), -- Внешний ключ, тип SERIAL
+    user_id SERIAL REFERENCES users(user_id), -- Внешний ключ, тип SERIAL
     review TEXT, -- Отзыв о товаре TEXT, не стал использовать varchar, потому что отзыв бывает и более 255 символов
     rating INT -- INT рейтинг, оценка
 );
 
 
 -- Генерируем 20 случайных пользователей
-INSERT INTO users (user_id, birth_date, sex, age)
+INSERT INTO users (birth_date, sex, age)
 SELECT
-  generate_series AS user_id,
   now() - (random() * (interval '30 years')) AS birth_date,
   CASE WHEN random() < 0.5 THEN 'Male' ELSE 'Female' END AS sex,
   floor(random() * 50 + 18)::int AS age
 FROM generate_series(1, 20); 
 
 -- Генерируем 20 случайных товаров
-INSERT INTO items (item_id, description, price, category)
+INSERT INTO items (description, price, category)
 SELECT
-  generate_series AS item_id,
   md5(random()::text) || 'Item' AS description,
   random() * 1000 AS price,
   unnest(array['Electronics', 'Clothing', 'Home Appliances']) AS category
 FROM generate_series(1, 20); 
 
 -- Генерируем 20 случайных отзывов
-INSERT INTO ratings (rating_id, item_id, user_id, review, rating)
+INSERT INTO ratings (item_id, user_id, review, rating)
 SELECT
-  generate_series AS rating_id,
   floor(random() * 20 + 1) AS item_id,
   floor(random() * 20 + 1) AS user_id,
   'Random review text ' || generate_series AS review,
   floor(random() * 5 + 1) AS rating
-FROM generate_series(1, 20); 
+FROM generate_series(1, 20);  
 
 
 /* В контексте генерации данных я столкнулся с неизвестной проблемой, 
