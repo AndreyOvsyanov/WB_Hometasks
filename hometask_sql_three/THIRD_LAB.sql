@@ -100,13 +100,13 @@ WITH sellers_info AS (
     COUNT(category) total_categ,
     SUM(revenue) total_revenue
   FROM sellers
-  WHERE EXTRACT(YEAR FROM to_date(date, 'DD/MM/YYYY')) = 2022
+  WHERE EXTRACT(YEAR FROM to_date(date_reg, 'DD/MM/YYYY')) = 2022
   GROUP BY seller_id
 ), sellers_and_categoryes AS (
   SELECT seller_id, category 
   FROM sellers 
   WHERE seller_id IN (SELECT seller_id FROM sellers_info WHERE total_categ = 2 AND total_revenue > 75000) AND
-      EXTRACT(YEAR FROM to_date(date, 'DD/MM/YYYY')) = 2022
+      EXTRACT(YEAR FROM to_date(date_reg, 'DD/MM/YYYY')) = 2022
   ORDER BY 1, 2
 )
 
