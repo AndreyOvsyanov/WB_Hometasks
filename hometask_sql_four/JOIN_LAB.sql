@@ -94,18 +94,20 @@ WITH total_revenue_categories AS (
             ) _a
         ) product_max_category
   	FROM total_revenue_categories _t
-), total_category_products AS (
-	SELECT 
-  		product_category, 
-  		total_revenue_category 
-  	FROM total_revenue_categories _t
-  	ORDER BY 2 DESC LIMIT 1
+), category_by_max_total_products AS ( -- Определяет категорию ПРОДУКТА, у которого максимально количестве продаж, суммарный ammount наибольший
+  	SELECT _p.product_category FROM products_3 _p
+  	JOIN (
+        SELECT _o.product_id, SUM(_o.order_ammount) FROM orders_2 _o
+        GROUP BY _o.product_id
+        ORDER BY 2 DESC
+      	LIMIT 1
+    ) _t USING (product_id)
 )
 
 SELECT
 	_t.product_category category,
     _t.total_revenue_category,
-    (SELECT product_category FROM total_category_products) category_max_revenue,
+    (SELECT * FROM category_by_max_total_products) product_max_from_category,
     _p.product_name product_max_category
 FROM total_revenue_categories _t
 JOIN max_products_by_revenue _m ON _m.product_category = _t.product_category
