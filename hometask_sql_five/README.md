@@ -1,2 +1,2 @@
 
-# Исполняемый файл - WINDOW_FUNCTION.sql
+# Исполняемый файл - WINDOW_FUNCTIONS.sql
